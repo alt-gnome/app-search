@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+reset="\e[m"
+boldgreen="\e[1;32m"
+boldred="\033[1;31m"
+
+dir=~/.local/bin/
+file="${dir}app-search"
+file_url=https://raw.githubusercontent.com/alt-gnome-team/app-search/main/app-search
+
+if [ -e $file ]; then
+    echo -e "${boldgreen}Обновление:${reset}"
+    rm $file
+    wget -P $dir $file_url -q --show-progress
+    echo -e "${boldgreen}Обновлено.${reset}"
+else
+    echo -e "${boldgreen}Установка:${reset}"
+    mkdir -p $dir
+    wget -P $dir $file_url -q --show-progress
+    echo -e "${boldgreen}Установлено.${reset}"
+fi
+
+chmod +x $file
