@@ -1,0 +1,33 @@
+reset="\e[m"
+boldgreen="\e[1;32m"
+boldred="\033[1;31m"
+
+if [ -z "$1" ]; then
+    echo -e "${boldred}Ошибка: укажите приложение${reset}"
+    exit 1
+fi
+
+app=$1
+
+sudo echo
+
+if type flatpak > /dev/null 2>&1; then
+    echo -e "${boldgreen}Flatpak >${reset}"
+    flatpak search --columns=application,name,version,remotes "$app"
+fi
+if type snap > /dev/null 2>&1; then
+    echo -e "${boldgreen}Snap >${reset}"
+    if [ -z "$(snap find "$app" 2> /dev/null | awk '{printf "%-37s %-10s\n", $1, $2}')" ]; then
+        echo "Совпадений не найдено"
+    else
+        snap find "$app" 2> /dev/null | awk '{printf "%-37s %-10s\n", $1, $2}'
+    fi
+fi
+if type apt-cache > /dev/null 2>&1; then
+    echo -e "${boldgreen}apt-get >${reset}"  
+    if [ -z $(sudo apt-cache search "$app") ]; then
+        echo "Совпадений не найдено"
+    else
+        sudo apt-cache search "$app"
+    fi
+fi
