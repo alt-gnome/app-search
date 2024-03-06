@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 reset="\e[m"
 boldgreen="\e[1;32m"
 boldred="\033[1;31m"
@@ -7,27 +9,23 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-app=$1
-
-sudo echo
-
-if type flatpak > /dev/null 2>&1; then
+if command -v flatpak > /dev/null 2>&1; then
     echo -e "${boldgreen}Flatpak >${reset}"
-    flatpak search --columns=application,name,version,remotes "$app"
+    flatpak search --columns=application,name,version,remotes "$1"
 fi
-if type snap > /dev/null 2>&1; then
+if command -v snap > /dev/null 2>&1; then
     echo -e "${boldgreen}Snap >${reset}"
-    if [ -z "$(snap find "$app" 2> /dev/null | awk '{printf "%-37s %-10s\n", $1, $2}')" ]; then
+    if [ -z "$(snap find "$1" 2> /dev/null | awk '{printf "%-37s %-10s\n", $1, $2}')" ]; then
         echo "Совпадений не найдено"
     else
-        snap find "$app" 2> /dev/null | awk '{printf "%-37s %-10s\n", $1, $2}'
+        snap find "$1" 2> /dev/null | awk '{printf "%-37s %-10s\n", $1, $2}'
     fi
 fi
-if type apt-cache > /dev/null 2>&1; then
-    echo -e "${boldgreen}apt-get >${reset}"  
-    if [ -z "$(sudo apt-cache search "$app")" ]; then
+if command -v apt-cache > /dev/null 2>&1; then
+    echo -e "${boldgreen}Репозитории >${reset}"
+    if [ -z "$(sudo apt-cache search "$1")" ]; then
         echo "Совпадений не найдено"
     else
-        sudo apt-cache search "$app"
+        sudo apt-cache search "$1"
     fi
 fi
